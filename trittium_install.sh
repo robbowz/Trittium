@@ -30,7 +30,7 @@ function install_packages() {
 	echo "Install packages..."
 	add-apt-repository -yu ppa:bitcoin/bitcoin  &>> ${SCRIPT_LOGFILE}
 	apt-get -y update &>> ${SCRIPT_LOGFILE}
-  sudo apt-get install p7zip-full &>> ${SCRIPT_LOGFILE}
+  	sudo apt-get install p7zip-full &>> ${SCRIPT_LOGFILE}
 	apt-get -y install wget make automake autoconf build-essential libtool autotools-dev \
 	git nano python-virtualenv pwgen virtualenv \
 	pkg-config libssl-dev libevent-dev bsdmainutils software-properties-common \
@@ -56,9 +56,9 @@ function remove_old_files() {
 	echo "Removing old files..."
 	sudo killall trittiumd
 	sudo rm -rf /root/trittium
-	sudo rm -rf /root/.trittium
-  sudo rm -rf trittiumd
-  sudo rm -rf trittium-cli
+	sudo rm -rf /root/.trittium2
+    sudo rm -rf trittiumd
+    sudo rm -rf trittium-cli
 	echo "Done..."
 }
 
@@ -66,8 +66,8 @@ function remove_old_files() {
 function download_wallet() {
 	echo "Downloading wallet..."
 	mkdir /root/trittium
-  cd trittium
-	mkdir /root/.trittium
+    cd trittium
+	mkdir /root/.trittium2
 	wget https://github.com/Trittium/trittium/releases/download/2.1.1/Trittium-2.1.1-Ubuntu-daemon.tgz
 	tar -zxvf Trittium-2.1.1-Ubuntu-daemon.tgz
 	rm /root/trittium/Trittium-2.1.1-Ubuntu-daemon.tgz
@@ -96,7 +96,7 @@ function configure_firewall() {
 
 function configure_masternode() {
 	echo "Configuring masternode..."
-	conffile=/root/.trittium/trittium.conf
+	conffile=/root/.trittium2/trittium.conf
 	PASSWORD=`pwgen -1 20 -n` &>> ${SCRIPT_LOGFILE}
 	if [ "x$PASSWORD" = "x" ]; then
 	    PASSWORD=${WANIP}-`date +%s`
@@ -113,7 +113,7 @@ function configure_masternode() {
 	echo -e "                        PLEASE WAIT 2 MINUTES"
 	echo -e "[0;35m==================================================================[0m"
 	echo ""
-	/root/trittium/trittiumd -daemon -datadir=/root/trittium/ 
+	/root/trittium/trittiumd -daemon 
 	echo "2 MINUTES LEFT"
 	sleep 60
 	echo "1 MINUTE LEFT"
@@ -124,17 +124,17 @@ function configure_masternode() {
 	echo "Creating masternode config..."
 	echo -e "daemon=1\nmasternode=1\nmasternodeprivkey=$masternodekey" >> ${conffile}
 	echo "Done...Starting daemon..."
-	/root/trittium/trittiumd -daemon -datadir=/root/trittium/
+	/root/trittium/trittiumd -daemon
 }
 
 function addnodes() {
 	echo "Adding nodes..."
-	conffile=/root/.trittium/trittium.conf
+	conffile=/root/.trittium2/trittium.conf
 	echo -e "\naddnode=seed.trittiumnet.com" 	>> ${conffile}
 	echo -e "addnode=seed2.trittiumnet.com" 	>> ${conffile}
 	echo -e "addnode=seed3.trittiumnet.com" 	>> ${conffile}
-  echo -e "addnode=seed4.trittiumnet.com" 	>> ${conffile}
-  echo -e "addnode=seed5.trittiumnet.com" 	>> ${conffile}
+    echo -e "addnode=seed4.trittiumnet.com" 	>> ${conffile}
+    echo -e "addnode=seed5.trittiumnet.com" 	>> ${conffile}
 	echo -e "addnode=explorer.trittium.cc\n" >> ${conffile}
 	echo "Done..."
 }
